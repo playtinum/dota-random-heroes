@@ -1,4 +1,4 @@
-import { error, type HttpError } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { Hero } from '$lib/models.js';
 import type { PageLoad } from './$types';
 

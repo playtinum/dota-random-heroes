@@ -2,11 +2,11 @@ import { writable } from "svelte/store";
 
 const defaultSettings = {
     heroCount: 3,
-    excludedHeroes: [],
+    excludedHeroes: '',
 };
 
 export const heroCount = writable<number>(defaultSettings.heroCount);
-export const excludedHeroes = writable<string[]>(defaultSettings.excludedHeroes);
+export const excludedHeroes = writable<string>(defaultSettings.excludedHeroes);
 
 export function initSettingsStore() {
     // load settings from local storage
@@ -17,8 +17,13 @@ export function initSettingsStore() {
 
     // if settings exist, update the store
     if (settings) {
-        const { heroCount, excludedHeroes } = settings;
-        heroCount.set(heroCount);
-        excludedHeroes.set(excludedHeroes);
+        heroCount.set(settings.heroCount);
+        excludedHeroes.set(settings.excludedHeroes);
+    }
+}
+
+export function saveSettingsToLocalStorage(settings: typeof defaultSettings) {
+    if(settings) {
+        localStorage.setItem("settings", JSON.stringify(settings));
     }
 }

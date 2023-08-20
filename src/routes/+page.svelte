@@ -1,18 +1,20 @@
 <script lang="ts">
 	import HeroGroup from '$lib/components/HeroGroup.svelte';
 import type { Hero } from '$lib/models';
-	import { heroCount } from '$lib/settings.store';
+	import { excludedHeroes, heroCount } from '$lib/settings.store';
     import type { PageData } from './$types';
 
+    /** @type {import('./$types').PageData} */
     export let data: PageData;
     let currentHeroSelection: Hero[] = [];
     let heroesHistory: Hero[][] = [];
 
     const { heroes } = data;
 
-	function randomNewHeroes(count: number) {
-        if(!heroes || heroes.length < 1) return;
+    $: heroesForRandom = heroes.filter((hero) => !$excludedHeroes.includes(hero.localized_name));
 
+	function randomNewHeroes() {
+        if(!heroesForRandom || heroesForRandom.length < 1) return;
         
         if(currentHeroSelection.length > 0) {
         // add latest to history
@@ -21,19 +23,19 @@ import type { Hero } from '$lib/models';
 
         // get count distinct random numbers in the range of 0 to heroes.length
         const randomNumbers = [];
-        while (randomNumbers.length < count) {
-            const randomNumber = Math.floor(Math.random() * heroes.length);
+        while (randomNumbers.length < $heroCount) {
+            const randomNumber = Math.floor(Math.random() * heroesForRandom.length);
             if (randomNumbers.indexOf(randomNumber) === -1) {
                 randomNumbers.push(randomNumber);
             }
         }
 
-        currentHeroSelection = randomNumbers.map((randomNumber) => heroes[randomNumber]);
+        currentHeroSelection = randomNumbers.map((randomNumber) => heroesForRandom[randomNumber]);
     }
 </script>
 
 <h1>Dota 2 Random Hero Picker</h1>
-<button type="button" on:click={() => randomNewHeroes($heroCount)}>Randomize {$heroCount}</button>
+<button type="button" on:click={() => randomNewHeroes()}>Randomize {$heroCount}</button>
 
 <div class="results-container">
     {#if currentHeroSelection.length > 0}
