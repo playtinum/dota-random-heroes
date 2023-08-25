@@ -1,5 +1,12 @@
 <script lang="ts">
+	import { onMount } from "svelte";
+	import { initSettingsStore } from "$lib/settings.store";
+
 	const currentYear = new Date().getFullYear();
+
+	onMount(() => {
+		initSettingsStore();
+	});
 </script>
 
 <div class="app">

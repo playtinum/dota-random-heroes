@@ -5,7 +5,7 @@ const defaultSettings = {
     excludedHeroes: '',
 };
 
-export const heroCount = writable<number>(defaultSettings.heroCount);
+export const heroCount = writable<number | null>(null);
 export const excludedHeroes = writable<string>(defaultSettings.excludedHeroes);
 
 export function initSettingsStore() {
@@ -17,8 +17,8 @@ export function initSettingsStore() {
 
     // if settings exist, update the store
     if (settings) {
-        heroCount.set(settings.heroCount);
-        excludedHeroes.set(settings.excludedHeroes);
+        heroCount.set(settings.heroCount ?? defaultSettings.heroCount);
+        excludedHeroes.set(settings.excludedHeroes ?? defaultSettings.excludedHeroes);
     }
 }
 

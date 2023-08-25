@@ -11,9 +11,10 @@ import type { Hero } from '$lib/models';
 
     const { heroes } = data;
 
-    $: heroesForRandom = heroes.filter((hero) => !$excludedHeroes.includes(hero.localized_name));
+    $: heroesForRandom = heroes.filter((hero) => !$excludedHeroes.includes(hero.localized_name)) ?? [];
 
 	function randomNewHeroes() {
+        if(!$heroCount) return;
         if(!heroesForRandom || heroesForRandom.length < 1) return;
         
         if(currentHeroSelection.length > 0) {
@@ -35,7 +36,11 @@ import type { Hero } from '$lib/models';
 </script>
 
 <h1>Dota 2 Random Hero Picker</h1>
-<button type="button" on:click={() => randomNewHeroes()}>Randomize {$heroCount}</button>
+{#if $heroCount}
+    <button type="button" on:click={() => randomNewHeroes()}>Randomize {$heroCount}</button>
+{:else}
+    Loading...
+{/if}
 
 <div class="results-container">
     {#if currentHeroSelection.length > 0}

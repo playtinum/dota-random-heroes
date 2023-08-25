@@ -1,22 +1,15 @@
 <script lang="ts">
-	import { excludedHeroes, heroCount, initSettingsStore, saveSettingsToLocalStorage } from "$lib/settings.store";
+	import { excludedHeroes, heroCount, saveSettingsToLocalStorage } from "$lib/settings.store";
 	import { onMount } from "svelte";
 	import { fade, fly } from "svelte/transition";
 
     let showNotification = false;
 
-    $: settings = {
-        $heroCount,
-        $excludedHeroes
-    };
-
-    onMount(() => {
-        initSettingsStore();
-    });
-
     function saveSettings() {
+        if(!$heroCount || $heroCount < 1) return;
+
         saveSettingsToLocalStorage({
-            heroCount: $heroCount,
+            heroCount: $heroCount ?? 3,
             excludedHeroes: $excludedHeroes ?? '',
         });
 
@@ -27,26 +20,27 @@
     }
 </script>
 
-<div class="settings">
-<div class="formfield">
-<label for="heroCount">Count of randomized heroes</label>
-<input id="heroCount" type="number" bind:value={$heroCount} />
-</div>
-
-<div class="formfield">
-<label for="excludedHeroes">Excluded heroes (comma separated)</label>
-<input id="excludedHeroes" type="text" bind:value={$excludedHeroes} />
-</div> 
-
-<button on:click={() => saveSettings()}>Save</button>
-
-{#if showNotification}
-    <div class="save-notification" out:fade in:fly={{ y: 20, duration: 500 }}>
-        Settings saved! 
+<form>
+    <div class="settings">
+    <div class="formfield">
+    <label for="heroCount">Count of randomized heroes</label>
+    <input id="heroCount" type="number" min="1" bind:value={$heroCount} />
     </div>
-{/if}
 
-</div>
+    <div class="formfield">
+    <label for="excludedHeroes">Excluded heroes (comma separated)</label>
+    <input id="excludedHeroes" type="text" bind:value={$excludedHeroes} />
+    </div> 
+
+    <button on:click={() => saveSettings()}>Save</button>
+
+    {#if showNotification}
+        <div class="save-notification" out:fade in:fly={{ y: 20, duration: 500 }}>
+            Settings saved! 
+        </div>
+    {/if}
+</form>
+
 
 <style>
     .settings {
@@ -67,6 +61,10 @@
         border-radius: 0.25rem;
         background-color: var(--bg-2);
         color: var(--text-1);
+    }
+
+    input:invalid {
+        border: 2px solid red;
     }
 
     input:focus {
