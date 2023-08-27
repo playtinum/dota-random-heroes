@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { excludedHeroes, heroCount, saveSettingsToLocalStorage } from "$lib/settings.store";
-	import { onMount } from "svelte";
 	import { fade, fly } from "svelte/transition";
 
     let showNotification = false;
