@@ -24,9 +24,12 @@ export function initSettingsStore() {
 }
 
 export function addExcludedHero(hero: string): void {
+    console.log('addExcludedHero', hero);
     settings.update((settings) => {
         const { excludedHeroes } = settings;
+        console.log('excludedHeroes', excludedHeroes);
         settings.excludedHeroes = [excludedHeroes, hero].join(',');
+        console.log('settings.excludedHeroes', settings.excludedHeroes);
         saveSettingsToLocalStorage(settings);
         return settings;
     });
