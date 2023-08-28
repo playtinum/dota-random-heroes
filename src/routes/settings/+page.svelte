@@ -1,15 +1,16 @@
 <script lang="ts">
-	import { excludedHeroes, heroCount, saveSettingsToLocalStorage } from "$lib/settings.store";
+	import { settings, saveSettingsToLocalStorage } from "$lib/settings.store";
 	import { fade, fly } from "svelte/transition";
 
     let showNotification = false;
 
     function saveSettings() {
-        if(!$heroCount || $heroCount < 1) return;
+        if(!$settings.heroCount || $settings.heroCount < 1) return;
 
+        // init settings if not set yet
         saveSettingsToLocalStorage({
-            heroCount: $heroCount ?? 3,
-            excludedHeroes: $excludedHeroes ?? '',
+            heroCount: $settings.heroCount ?? 3,
+            excludedHeroes: $settings.excludedHeroes ?? '',
         });
 
         showNotification = true;
@@ -23,12 +24,12 @@
     <div class="settings">
     <div class="formfield">
     <label for="heroCount">Count of randomized heroes</label>
-    <input id="heroCount" type="number" min="1" bind:value={$heroCount} />
+    <input id="heroCount" type="number" min="1" bind:value={$settings.heroCount} />
     </div>
 
     <div class="formfield">
     <label for="excludedHeroes">Excluded heroes (comma separated)</label>
-    <input id="excludedHeroes" type="text" bind:value={$excludedHeroes} />
+    <input id="excludedHeroes" type="text" bind:value={$settings.excludedHeroes} />
     </div> 
 
     <button on:click={() => saveSettings()}>Save</button>

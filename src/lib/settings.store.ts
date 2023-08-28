@@ -1,28 +1,48 @@
 import { writable } from "svelte/store";
 
-const defaultSettings = {
-    heroCount: 3,
-    excludedHeroes: '',
-};
+export type Settings = {
+    heroCount: number | null;
+    excludedHeroes: string;
+}
 
-export const heroCount = writable<number | null>(null);
-export const excludedHeroes = writable<string>(defaultSettings.excludedHeroes);
+export const settings = writable<Settings>({
+    heroCount: null,
+    excludedHeroes: '',
+});
 
 export function initSettingsStore() {
     // load settings from local storage
     const jsonSettings = localStorage.getItem("settings");
     if (!jsonSettings) return;
 
-    const settings = JSON.parse(jsonSettings);
+    const loadedSettings = JSON.parse(jsonSettings);
 
     // if settings exist, update the store
-    if (settings) {
-        heroCount.set(settings.heroCount ?? defaultSettings.heroCount);
-        excludedHeroes.set(settings.excludedHeroes ?? defaultSettings.excludedHeroes);
+    if (loadedSettings) {
+        settings.set(loadedSettings);
     }
 }
 
-export function saveSettingsToLocalStorage(settings: typeof defaultSettings) {
+export function addExcludedHero(hero: string): void {
+    settings.update((settings) => {
+        const { excludedHeroes } = settings;
+        settings.excludedHeroes = [excludedHeroes, hero].join(',');
+        saveSettingsToLocalStorage(settings);
+        return settings;
+    });
+}
+
+export function removeExcludedHero(hero: string): void {
+    settings.update((settings) => {
+        const { excludedHeroes } = settings;
+        settings.excludedHeroes = excludedHeroes.split(',').filter((h) => h !== hero).join(',');
+        saveSettingsToLocalStorage(settings);
+        return settings;
+    });
+}
+
+
+export function saveSettingsToLocalStorage(settings: Partial<Settings>) {
     if(settings) {
         localStorage.setItem("settings", JSON.stringify(settings));
     }
