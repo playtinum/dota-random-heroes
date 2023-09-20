@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ng-dota-random-heroes": {
+    "dota-random-heroes": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -44,7 +44,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser-esbuild",
           "options": {
-            "outputPath": "dist/ng-dota-random-heroes",
+            "outputPath": "public/dota-random-heroes",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": ["zone.js"],
@@ -85,10 +85,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "ng-dota-random-heroes:build:production"
+              "browserTarget": "dota-random-heroes:build:production"
             },
             "development": {
-              "browserTarget": "ng-dota-random-heroes:build:development"
+              "browserTarget": "dota-random-heroes:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -96,7 +96,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ng-dota-random-heroes:build"
+            "browserTarget": "dota-random-heroes:build"
           }
         },
         "lint": {
