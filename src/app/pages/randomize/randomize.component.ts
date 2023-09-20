@@ -1,11 +1,8 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HeroesService } from '../../heroes.service';
-import { Hero } from '../../models';
 import { HeroGroupComponent } from '../../components/hero-group.component';
 import { SettingsService } from '../settings/settings.service';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { pairwise, scan } from 'rxjs';
+import { RandomizeService } from './randomize.service';
 
 @Component({
   selector: 'app-randomize',
@@ -14,11 +11,15 @@ import { pairwise, scan } from 'rxjs';
   template: `
     <div class="flex flex-col gap-4">
       <h2 class="text-2xl">Randomize Heroes</h2>
-      <button class="w-fit" (click)="randomizeHeroes()">Randomize {{ settingsService.randomizeCount() }}</button>
-      <app-hero-group *ngIf="currentRandomHeroes().length > 0" [heroes]="currentRandomHeroes()"></app-hero-group>
-      <h2 class="text-2xl" *ngIf="isHistoryAvailable()">History</h2>
+      <button class="w-fit" (click)="randomizeService.randomizeHeroesForCount(settingsService.randomizeCount())">
+        Randomize {{ settingsService.randomizeCount() }}
+      </button>
+      <app-hero-group
+        *ngIf="currentRandomHeroesAvailable()"
+        [heroes]="randomizeService.currentRandomizedHeroes()"></app-hero-group>
+      <h2 class="text-2xl" *ngIf="randomHistoryAvailable()">History</h2>
       <div class="flex flex-row gap-4">
-        <app-hero-group *ngFor="let history of randomHistory()" [heroes]="history"></app-hero-group>
+        <app-hero-group *ngFor="let history of randomizeService.randomHistory()" [heroes]="history"></app-hero-group>
       </div>
     </div>
   `,
@@ -26,32 +27,9 @@ import { pairwise, scan } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RandomizeComponent {
-  heroesService = inject(HeroesService);
+  randomizeService = inject(RandomizeService);
   settingsService = inject(SettingsService);
 
-  currentRandomHeroes = signal<Hero[]>([]);
-  isHistoryAvailable = computed(() => {
-    return this.randomHistory() !== undefined && this.randomHistory().length > 0;
-  });
-  private randomHistory$ = toObservable(this.currentRandomHeroes).pipe(
-    pairwise(),
-    scan((acc, [previous]) => (previous.length ? [previous, ...acc.slice(0, 4)] : []), [] as Hero[][])
-  );
-  randomHistory = toSignal(this.randomHistory$, { initialValue: [] as Hero[][] });
-
-  randomizeHeroes() {
-    const heroes =
-      this.heroesService
-        .heroes()
-        ?.filter((hero) => !this.settingsService.excludedHeroes().includes(hero.localized_name)) ?? [];
-
-    const randomHeroes: Hero[] = [];
-    for (let i = 0; i < this.settingsService.randomizeCount(); i++) {
-      const randomIndex = Math.floor(Math.random() * heroes.length);
-      // pop random hero from heroes array to get distinct heroes
-      const hero = heroes.splice(randomIndex, 1)[0];
-      randomHeroes.push(hero);
-    }
-    this.currentRandomHeroes.set(randomHeroes);
-  }
+  randomHistoryAvailable = computed(() => this.randomizeService.randomHistory().length > 0);
+  currentRandomHeroesAvailable = computed(() => this.randomizeService.currentRandomizedHeroes().length > 0);
 }

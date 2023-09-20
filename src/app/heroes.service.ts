@@ -1,8 +1,9 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import { Hero } from './models';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, share, Subject, switchMap, tap } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { SettingsService } from './pages/settings/settings.service';
 
 type HeroStorage = {
   heroes: Hero[];
@@ -14,7 +15,11 @@ type HeroStorage = {
 })
 export class HeroesService {
   private http = inject(HttpClient);
-
+  private settingsService = inject(SettingsService);
+  heroesWithoutExcluded = computed(() => {
+    const excludedHeroes = this.settingsService.excludedHeroes();
+    return this.heroes().filter((hero) => !excludedHeroes.includes(hero.localized_name));
+  });
   private initialHeroesSubject$ = new Subject<Hero[]>();
   private heroes$: Observable<Hero[]> = this.initialHeroesSubject$.pipe(
     switchMap((heroes) =>
