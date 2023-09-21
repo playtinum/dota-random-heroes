@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
 
@@ -16,7 +16,7 @@ import { ControlValueAccessor, NgControl } from '@angular/forms';
       </div>
     </div>
   `,
-  styles: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LabelInputTextComponent implements ControlValueAccessor {
   @Input() label = '';

@@ -11,7 +11,6 @@ import { Hero } from '../models';
       <li *ngFor="let hero of heroes">{{ hero.localized_name }}</li>
     </ul>
   `,
-  styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeroGroupComponent {
